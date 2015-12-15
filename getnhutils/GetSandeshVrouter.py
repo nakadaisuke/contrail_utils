@@ -109,14 +109,23 @@ class GetSandeshVrouter(object):
         nh_index_list = []
         getsnh = GetSandeshVrouter(self.hostname)
         mcast_comp_data = getsnh.get_mcast_comp(vni)
-        for i in mcast_comp_data['nh']['NhSandeshData']['mc_list']['list']['McastData']:
+        if type(mcast_comp_data['nh']['NhSandeshData']['mc_list']['list']['McastData']) == list:
+            for i in mcast_comp_data['nh']['NhSandeshData']['mc_list']['list']['McastData']:
+                if i['type']['#text'] == 'Interface':
+                    tap_list.append(i)
+        else:
+            i = mcast_comp_data['nh']['NhSandeshData']['mc_list']['list']['McastData']
             if i['type']['#text'] == 'Interface':
                 tap_list.append(i)
 
         mc_index = mcast_comp_data['nh']['NhSandeshData']['nh_index']['#text']
         mc_list = getsnh.get_nh(mc_index)['KNHResp']['nh_list']['list']['KNHInfo']['component_nh']['list']['KComponentNH']
-        for i in mc_list:
-            nh_index_list.append(i['nh_id']['#text'])
+        if type(mc_list) == list:
+            for i in mc_list:
+                nh_index_list.append(i['nh_id']['#text'])
+        else:
+            nh_index_list.append(mc_list['nh_id']['#text'])
+
 
         for i in nh_index_list:
             getsnh._get_tunnel(i, tunnel_list)
@@ -128,12 +137,15 @@ class GetSandeshVrouter(object):
         getsnh = GetSandeshVrouter(self.hostname)
         nh_data = getsnh.get_nh(mc_index)
         if nh_data['KNHResp']['nh_list']['list']['KNHInfo']['type']['#text'] == 'COMPOSITE':
-            if type(nh_data['KNHResp']['nh_list']['list']['KNHInfo']['component_nh']['list']['KComponentNH']) == list:
-                for i in nh_data['KNHResp']['nh_list']['list']['KNHInfo']['component_nh']['list']['KComponentNH']:
-                    self._get_tunnel(i['nh_id']['#text'], tunnel_list)
-            else:
-                i = nh_data['KNHResp']['nh_list']['list']['KNHInfo']['component_nh']['list']['KComponentNH']['nh_id']['#text']
-                self._get_tunnel(i, tunnel_list)
+            try:
+                if type(nh_data['KNHResp']['nh_list']['list']['KNHInfo']['component_nh']['list']['KComponentNH']) == list:
+                    for i in nh_data['KNHResp']['nh_list']['list']['KNHInfo']['component_nh']['list']['KComponentNH']:
+                        self._get_tunnel(i['nh_id']['#text'], tunnel_list)
+                else:
+                    i = nh_data['KNHResp']['nh_list']['list']['KNHInfo']['component_nh']['list']['KComponentNH']['nh_id']['#text']
+                    self._get_tunnel(i, tunnel_list)
+            except:
+                pass
         elif nh_data['KNHResp']['nh_list']['list']['KNHInfo']['type']['#text'] == 'TUNNEL':
             tunnel_list.append(nh_data)
 
