@@ -27,6 +27,14 @@ def fix_cont(ipaddr):
     valid_ip = '%s.%s.%s.%s' % (ip_list[3],ip_list[2],ip_list[1],ip_list[0])
     return valid_ip
 
+def encap_chk(encap):
+    if encap == 'VALID | TUNNEL_GRE':
+        return 'MPLSoGRE'
+    elif encap == 'VALID | TUNNEL_MPLS_UDP':
+        return 'MPLSoUDP'
+    else:
+        return 'VXLAN'
+
 for i in tap_list:
     tap_ifls.append(i['itf']['#text'])
 
@@ -35,18 +43,21 @@ for i in tunnel_list:
     data_list = {}
     data_list['tun_sip'] = orig_data['tun_sip']['#text']
     data_list['tun_dip'] = orig_data['tun_dip']['#text']
-    data_list['encap'] = orig_data['flags']['#text']
+    data_list['encap'] = orig_data['flags']['#value']
     tunnel_pairs.append(data_list)
 
 header = '### Host %s VNI %s BUM Tree ###' % (host_id, vni)
 print header
-print '---- TAP interfaces ----'
-for i in tap_ifls:
-    print i
+if len(tap_ifls) > 0:
+    print '---- TAP interfaces ----'
+    for i in tap_ifls:
+        print i
 
-print '---- Tunnel interfaces ----'
-for i in tunnel_pairs:
-    tun_sip = fix_cont(i['tun_sip'])
-    tun_dip = fix_cont(i['tun_dip'])
-    print 'SIP:%s DIP:%s Encap:%s' % (tun_sip,tun_dip,i['encap'])
+if len(tunnel_pairs) > 0:
+    print '---- Tunnel interfaces ----'
+    for i in tunnel_pairs:
+        tun_sip = fix_cont(i['tun_sip'])
+        tun_dip = fix_cont(i['tun_dip'])
+        encap = encap_chk(i['encap'])
+        print 'SIP:%s DIP:%s Encap:%s' % (tun_sip,tun_dip,encap)
 
