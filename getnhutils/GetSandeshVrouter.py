@@ -8,24 +8,18 @@ class GetSandeshVrouter(object):
         self.hostname = hostname
         self.port = str(port)
 
-    def get_xml(self, path):
+
+    def snhdict(self, path):
         url = 'http://%s:%s/%s' % (self.hostname, self.port, path)
         req = urllib2.Request(url)
         try:
             response = urllib2.urlopen(req)
             xmldata = response.read()
-            return xmldata
         except:
             self._error_msg('get_xml', url)
             raise
 
-    def create_xmldict(self, xml):
-        xmlparse = xmldict.xml_to_dict(xml)
-        return xmlparse
-
-    def snhdict(self, path):
-        get_xml = self.get_xml(path)
-        xml_dict = self.create_xmldict(get_xml)
+        xml_dict = xmldict.xml_to_dict(xmldata)
         return xml_dict
 
 
@@ -59,6 +53,16 @@ class GetSandeshVrouter(object):
             return all_l2route_dict
         except:
             self._error_msg('get_l2route', vrfid)
+            raise
+
+
+    def get_itf(self):
+        path = 'Snh_PageReq?x=begin:-1,end:-1,table:db.interface.0,'
+        try:
+            itf_dict = self.snhdict(path)
+            return itf_dict
+        except:
+            self._error_msg('get_itf', self.hostname)
             raise
 
 

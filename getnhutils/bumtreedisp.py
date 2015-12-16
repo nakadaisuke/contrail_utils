@@ -20,6 +20,7 @@ tunnel_pairs = []
 
 groute = GetSandeshVrouter(hostname=host_id)
 tunnel_list, tap_list = groute.get_nh_data(vni)
+mac_list = groute.get_itf()
 
 def fix_cont(ipaddr):
     ## This definition is fixed for PR1522213
@@ -36,7 +37,13 @@ def encap_chk(encap):
         return 'VXLAN'
 
 for i in tap_list:
-    tap_ifls.append(i['itf']['#text'])
+    data_list = {}
+    data_list['tap_itf'] = i['itf']['#text']
+    for h in mac_list['__ItfResp_list']['ItfResp']['itf_list']['list']['ItfSandeshData']:
+        if h['name']['#text'] == i['itf']['#text']:
+             mac_addr = h['mac_addr']['#text']
+             data_list['mac_addr'] = mac_addr
+             tap_ifls.append(data_list)
 
 for i in tunnel_list:
     orig_data = i['KNHResp']['nh_list']['list']['KNHInfo']
@@ -51,7 +58,9 @@ print header
 if len(tap_ifls) > 0:
     print '---- TAP interfaces ----'
     for i in tap_ifls:
-        print i
+        tap_name = i['tap_itf']
+        addr = i['mac_addr']
+        print 'TAP:%-15s MAC:%s' % (tap_name,addr)
 
 if len(tunnel_pairs) > 0:
     print '---- Tunnel interfaces ----'
