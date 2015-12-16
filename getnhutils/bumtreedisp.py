@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 import argparse
 from GetSandeshVrouter import *
 
@@ -8,10 +7,13 @@ from GetSandeshVrouter import *
 parser = argparse.ArgumentParser(description='Display Mcast Tree')
 parser.add_argument('-t', '--target', dest='host_id', help='vRouter IP address')
 parser.add_argument('-v', '--vni', dest='vni', help='VXLAN Network Identifier')
+parser.add_argument('-m', '--mac', dest='mac_flag', help='Disable MAC address')
+## MAC address needs long time to get list, if there are many interfaces in vrouter
 args = parser.parse_args()
 
 host_id = args.host_id
 vni = args.vni
+mac_flag = args.mac_flag
 
 tap_list = []
 tunnel_list = []
@@ -20,7 +22,6 @@ tunnel_pairs = []
 
 groute = GetSandeshVrouter(hostname=host_id)
 tunnel_list, tap_list = groute.get_nh_data(vni)
-mac_list = groute.get_itf()
 
 def fix_cont(ipaddr):
     ## This definition is fixed for PR1522213
@@ -36,14 +37,16 @@ def encap_chk(encap):
     else:
         return 'VXLAN'
 
-for i in tap_list:
-    data_list = {}
-    data_list['tap_itf'] = i['itf']['#text']
-    for h in mac_list['__ItfResp_list']['ItfResp']['itf_list']['list']['ItfSandeshData']:
-        if h['name']['#text'] == i['itf']['#text']:
-             mac_addr = h['mac_addr']['#text']
-             data_list['mac_addr'] = mac_addr
-             tap_ifls.append(data_list)
+if len(tap_list) > 0:
+    mac_list = groute.get_itf()
+    for i in tap_list:
+        data_list = {}
+        data_list['tap_itf'] = i['itf']['#text']
+        for h in mac_list['__ItfResp_list']['ItfResp']['itf_list']['list']['ItfSandeshData']:
+            if h['name']['#text'] == i['itf']['#text']:
+                 mac_addr = h['mac_addr']['#text']
+                 data_list['mac_addr'] = mac_addr
+                 tap_ifls.append(data_list)
 
 for i in tunnel_list:
     orig_data = i['KNHResp']['nh_list']['list']['KNHInfo']
