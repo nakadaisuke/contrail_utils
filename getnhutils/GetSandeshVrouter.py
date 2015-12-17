@@ -16,8 +16,8 @@ class GetSandeshVrouter(object):
             response = urllib2.urlopen(req)
             xmldata = response.read()
         except:
-            self._error_msg('get_xml', url)
-            raise
+            self.__error_msg('get_xml', url)
+            
 
         xml_dict = xmldict.xml_to_dict(xmldata)
         return xml_dict
@@ -27,8 +27,7 @@ class GetSandeshVrouter(object):
         path = 'Snh_KVxLanReq?vxlan_label=%s' % str(vni)
         vxlan_dict = self.snhdict(path)
         if vxlan_dict.has_key('ErrResp')  == True:
-            self._error_msg('vxlan', vni)
-            raise
+            self.__error_msg('vxlan', vni)
         else:
             return vxlan_dict
 
@@ -37,8 +36,7 @@ class GetSandeshVrouter(object):
         path = 'Snh_KNHReq?x=%s' % str(nhid)
         nh_dict = self.snhdict(path)
         if nh_dict.has_key('InternalErrResp') == True:
-            self._error_msg('get_nh', nhid)
-            raise
+            self.__error_msg('get_nh', nhid)
         else:
             return nh_dict
 
@@ -52,8 +50,7 @@ class GetSandeshVrouter(object):
             all_l2route_dict = self.snhdict(all_path)
             return all_l2route_dict
         except:
-            self._error_msg('get_l2route', vrfid)
-            raise
+            self.__error_msg('get_l2route', vrfid)
 
 
     def get_itf(self):
@@ -62,8 +59,7 @@ class GetSandeshVrouter(object):
             itf_dict = self.snhdict(path)
             return itf_dict
         except:
-            self._error_msg('get_itf', self.hostname)
-            raise
+            self.__error_msg('get_itf', self.hostname)
 
 
     def get_mcast_comp(self, vni):
@@ -71,8 +67,7 @@ class GetSandeshVrouter(object):
         try:
             nhid = vxlan_dict['KVxLanResp']['vxlan_list']['list']['KVxLanInfo']['nhid']['#text']
         except:
-            self._error_msg('vxlan_dict', vni)
-            raise
+            self.__error_msg('vxlan_dict', vni)
 
         nh_dict = self.get_nh(nhid)
         vrfid = nh_dict['KNHResp']['nh_list']['list']['KNHInfo']['vrf']['#text']
@@ -104,8 +99,7 @@ class GetSandeshVrouter(object):
                      mcast_tree =  i
                      return mcast_tree
         else:
-           self._error_msg('get_mcast_tree', vni)
-           raise
+           self.__error_msg('get_mcast_tree', vni)
 
 
     def get_nh_data(self, vni):
@@ -156,7 +150,7 @@ class GetSandeshVrouter(object):
     
     
 
-    def _error_msg(self, oper, msg):
+    def __error_msg(self, oper, msg):
         msg = '\nFaild to get %s: %s\n' % (oper,msg)
-        print msg
+        raise ValueError(msg)
         

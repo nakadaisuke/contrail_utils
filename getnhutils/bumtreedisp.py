@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import argparse
-from GetSandeshVrouter import *
+from GetSandeshVrouter import GetSandeshVrouter
 
 
 parser = argparse.ArgumentParser(description='Display Mcast Tree')
