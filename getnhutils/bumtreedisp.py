@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import argparse
-from GetSandeshVrouter import GetSandeshVrouter
+from contrail_sandeshlibs import *
 
 
 parser = argparse.ArgumentParser(description='Display Mcast Tree')
@@ -20,7 +20,7 @@ tunnel_list = []
 tap_ifls = []
 tunnel_pairs = []
 
-groute = GetSandeshVrouter(hostname=host_id)
+groute = GetContrailSandesh(hostname=host_id)
 tunnel_list, tap_list = groute.get_nh_data(vni)
 
 def fix_cont(ipaddr):
@@ -72,4 +72,3 @@ if len(tunnel_pairs) > 0:
         tun_dip = fix_cont(i['tun_dip'])
         encap = encap_chk(i['encap'])
         print 'SIP:%-15s DIP:%-15s Encap:%s' % (tun_sip,tun_dip,encap)
-
