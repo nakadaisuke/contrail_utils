@@ -70,5 +70,5 @@ if len(tunnel_pairs) > 0:
     for i in tunnel_pairs:
         tun_sip = fix_cont(i['tun_sip'])
         tun_dip = fix_cont(i['tun_dip'])
-        encap = encap_chk(i['encap'])
+        encap = encap_chk(i['flags'])
         print 'SIP:%-15s DIP:%-15s Encap:%s' % (tun_sip,tun_dip,encap)
