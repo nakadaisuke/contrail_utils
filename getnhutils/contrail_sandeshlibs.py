@@ -74,98 +74,98 @@ class GetContrailSandesh(object):
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_inet4_uc_route_list(self, vrf_index):
+    def get_inet4_uc_route(self, vrf_index):
         #Return Inet4UcRouteResp by dict
         path = 'Snh_Inet4UcRouteReq?vrf_index=%s&src_ip=&prefix_len=&stale=' % vrf_index
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_inet6_uc_route_list(self, vrf_index):
+    def get_inet6_uc_route(self, vrf_index):
         #Return Inet6UcRouteResp by dict
         path = 'Snh_Inet6UcRouteReq?vrf_index=%s&src_ip=&prefix_len=&stale=' % vrf_index
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_inet4_mc_route_list(self, vrf_index):
+    def get_inet4_mc_route(self, vrf_index):
         #Return Inet4McRouteResp by dict
         path = 'Snh_Inet4McRouteReq?vrf_index=%s&src_ip=&prefix_len=&stale=' % vrf_index
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_layer2_route_list(self, vrf_index):
+    def get_layer2_route(self, vrf_index):
         #Return Layer2RouteResp by dict
         path = 'Snh_Layer2RouteReq?vrf_index=%s&mac=&stale=' % vrf_index
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_bridge_route_list(self, vrf_index):
+    def get_bridge_route(self, vrf_index):
         #Return BridgeRouteReq by dict
         path = 'Snh_BridgeRouteReq?vrf_index=%s&mac=&stale=' % vrf_index
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_evpn_route_list(self, vrf_index):
+    def get_evpn_route(self, vrf_index):
         #Return EvpnRouteResp by dict
         path = 'Snh_EvpnRouteReq?vrf_index=%s&mac=&stale=' % vrf_index
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_itf_list(self):
+    def get_itf(self):
         #Return ItfResp by dict
         path = 'Snh_ItfReq?name=&type=&uuid=&vn=&mac=&ipv4_address=&ipv6_address=&parent_uuid=&ip_active=&ip6_active=&l2_active='
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_mpls_list(self):
+    def get_mpls(self):
         #Return MplsResp by dict
         path = 'Snh_MplsReq'
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_vrf_assign_list(self):
+    def get_vrf_assign(self):
         #Return VrfAssignReq by dict
         path = 'Snh_VrfAssignReq?uuid='
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_mirror_entry_list(self):
+    def get_mirror_entry(self):
         #Return MirrorEntryResp by dict
         path = 'Snh_MirrorEntryReq'
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_link_local_service_list(self):
-        #Return LinkLocalServiceResponse by dict
+    def get_link_local_service(self):
+        #Return LinkLocalServiceResp by dict
         path = 'Snh_LinkLocalServiceInfo'
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_load_balancer_list(self):
+    def get_load_balancer(self):
         #Return LoadBalancerResp by dict
         path = 'Snh_LoadBalancerReq?uuid='
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_acl_list(self):
+    def get_acl(self):
         #Return AclResp by dict
         path = 'Snh_AclReq?uuid='
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_acl_flow_list(self):
+    def get_acl_flow(self):
         #Return AclFlowResp by dict
         path = 'Snh_AclFlowReq?uuid='
         rsp = self.get_snhdict(path)
@@ -186,21 +186,21 @@ class GetContrailSandesh(object):
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_vxlan_list(self):
+    def get_vxlan(self):
         #Return VxLanResp by dict
         path = 'Snh_VxLanReq'
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_vxlan_config_entries(self):
+    def get_vxlan_config(self):
         #Return VxLanConfigResp by dict
         path = 'Snh_VxLanConfigReq?vxlan_id=&vn=&active='
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_service_instance_list(self):
+    def get_service_instance(self):
         #Return ServiceInstanceResp by dict
         path = 'Snh_ServiceInstanceReq?uuid='
         rsp = self.get_snhdict(path)
@@ -263,14 +263,14 @@ class GetContrailSandesh(object):
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_kif_list(self):
+    def get_kinterface(self):
         #Return KInterfaceResp by dict
         path = 'Snh_KInterfaceReq?if_id='
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_kroute_list(self, vrf_id):
+    def get_kroute(self, vrf_id):
         #Return KRouteReq by dict
         #path = 'Snh_KRouteReq?vrf_id=%s' % vrf_id
         #rsp = self.get_snhdict(path)
@@ -278,56 +278,56 @@ class GetContrailSandesh(object):
         #return snh_data
         return 'KrouteReq has issue so that this function is closed'
 
-    def get_knh_list(self,nh_id=''):
+    def get_knh(self,nh_id=''):
         #Return KNHResp by dict
         path = 'Snh_KNHReq?nh_id=%s' % nh_id
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_kmpls_list(self):
+    def get_kmpls(self):
         #Return KMPLSResp by dict
         path = 'Snh_KMplsReq?mpls_label='
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_kmirror_list(self):
+    def get_kmirror(self):
         #Return KMirrorResp by dict
         path = 'Snh_KMirrorReq?mirror_id='
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_next_kflow_list(self):
+    def get_next_kflow(self):
         #Return NextKFlowResp by dict
         path = 'Snh_NextKFlowReq?flow_handle='
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_kflow_list(self):
+    def get_kflow(self):
         #Return KFlowResp by dict
         path = 'Snh_KFlowReq?flow_idx='
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_kvxlan_list(self,vni):
+    def get_kvxlan(self,vni):
         #Return KVxlanResp by dict
         path = 'Snh_KVxLanReq?vxlan_label=%s' % vni
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_kvrf_assign_list(self,vni):
+    def get_kvrf_assign(self,vni):
         #Return KVrfAssignResp by dict
         path = 'Snh_KVrfAssignReq?vif_index='
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_kvrf_stats_list(self):
+    def get_kvrf_stats(self):
         #Return KVrfStatsResp by dict
         path = 'Snh_KVrfStatsReq?vrf_index='
         rsp = self.get_snhdict(path)
@@ -349,49 +349,49 @@ class GetContrailSandesh(object):
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_pswitch(self):
+    def get_ovsdb_physical_switch(self):
         #Return OvsdbPhysicalSwitchResp by dict
         path = 'Snh_OvsdbPhysicalSwitchReq?session_remote_ip=&session_remote_port='
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_pport_list(self):
+    def get_ovsdb_physical_port(self):
         #Return OvsdbPhysicalPortResp by dict
         path = 'Snh_OvsdbPhysicalPortReq?session_remote_ip=&session_remote_port=&name='
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_lswitch(self):
+    def get_ovsdb_logical_switch(self):
         #Return OvsdbLogicalSwitchResp by dict
         path = 'Snh_OvsdbLogicalSwitchReq?session_remote_ip=&session_remote_port=&name='
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_vlan_port_binding_list(self):
+    def get_ovsdb_vlan_port_binding(self):
         #Return OvsdbVlanPortBindingResp by dict
         path = 'Snh_OvsdbVlanPortBindingReq?session_remote_ip=&session_remote_port=&physical_port='
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_uc_mac_local_list(self):
+    def get_ovsdb_unicast_mac_local(self):
         #Return OvsdbUnicastMacLocalResp by dict
         path = 'Snh_OvsdbUnicastMacLocalReq?session_remote_ip=&session_remote_port=&logical_switch=&mac='
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_ovsdb_vrf_list(self,ls_uuid):
+    def get_ovsdb_vrf(self,ls_uuid):
         #Return OvsdbVrfResp by dict
         path = 'Snh_OvsdbVrfReq?session_remote_ip=&session_remote_port=&logical_switch=&mac='
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_uc_mac_remote_list(self,ls_uuid):
+    def get_ovsdb_unicast_mac_remote(self,ls_uuid):
         #Return OvsdbUnicastMacRemoteResp by dict
         path = 'Snh_OvsdbUnicastMacRemoteReq?session_remote_ip=&session_remote_port=&logical_switch=%s&mac=' % ls_uuid
         rsp = self.get_snhdict(path)
@@ -405,16 +405,128 @@ class GetContrailSandesh(object):
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_ha_stale_dev_vn_export(self,tor_name):
+    def get_ovsdb_ha_stale_dev_vn_export(self,tor_name):
         #Return OvsdbHaStaleDevVnExportResp by dict
         path = 'Snh_OvsdbHaStaleDevVnExportReq?dev_name=%s&vn_uuid=' % tor_name
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
 
-    def get_ha_stale_l2route_export(self,tor_name):
+    def get_ovsdb_ha_stale_l2route_export(self,tor_name):
         #Return OvsdbHaStaleL2RouteExportReq by dict
         path = 'Snh_OvsdbHaStaleL2RouteExportReq?dev_name=%s&vn_uuid=&mac=' % tor_name
+        rsp = self.get_snhdict(path)
+        snh_data = self.get_snh_dict_data(rsp)
+        return snh_data
+
+    def get_dhcp_stats(self):
+        #Return DhcpStats by dict
+        path = 'Snh_DhcpInfo'
+        rsp = self.get_snhdict(path)
+        snh_data = self.get_snh_dict_data(rsp)
+        return snh_data
+
+    def get_dhcpv6_stats(self):
+        #Return Dhcpv6Stats by dict
+        path = 'Snh_Dhcpv6Info'
+        rsp = self.get_snhdict(path)
+        snh_data = self.get_snh_dict_data(rsp)
+        return snh_data
+
+    def get_arp_info(self):
+        #Return Snh_ArpInfo by dict
+        path = 'Snh_ArpInfo'
+        rsp = self.get_snhdict(path)
+        snh_data = self.get_snh_dict_data(rsp)
+        return snh_data
+
+    def get_dns_stats(self):
+        #Return Snh_DnsStats by dict
+        path = 'Snh_DnsInfo'
+        rsp = self.get_snhdict(path)
+        snh_data = self.get_snh_dict_data(rsp)
+        return snh_data
+
+    def get_icmp_stats(self):
+        #Return Snh_IcmpStats by dict
+        path = 'Snh_IcmpInfo'
+        rsp = self.get_snhdict(path)
+        snh_data = self.get_snh_dict_data(rsp)
+        return snh_data
+
+    def get_icmpv6_stats(self):
+        #Return Snh_Icmpv6Stats by dict
+        path = 'Snh_Icmpv6Info'
+        rsp = self.get_snhdict(path)
+        snh_data = self.get_snh_dict_data(rsp)
+        return snh_data
+
+    def get_metadata(self):
+        #Return Snh_MetadataInfo by dict
+        path = 'Snh_MetadataInfo'
+        rsp = self.get_snhdict(path)
+        snh_data = self.get_snh_dict_data(rsp)
+        return snh_data
+
+    def get_show_all_info(self):
+        #Return Snh_ShowAllInfo by dict
+        path = 'Snh_ShowAllInfo'
+        rsp = self.get_snhdict(path)
+        snh_data = self.get_snh_dict_data(rsp)
+        return snh_data
+
+    def get_interface_arp_stats(self, index=''):
+        #Return InterfaceArpStatsResponse by dict
+        path = 'Snh_InterfaceArpStatsReq?interface_index=%s' % index
+        rsp = self.get_snhdict(path)
+        snh_data = self.get_snh_dict_data(rsp)
+        return snh_data
+
+    def get_pkt_trace_info(self, num_buf='', fnum_buf=''):
+        #Return PktTraceInfoResponse by dict
+        path = 'Snh_PktTraceInfo?num_buffers=%s&flow_num_buffers=%s' % (num_buf,fnum_buf)
+        rsp = self.get_snhdict(path)
+        snh_data = self.get_snh_dict_data(rsp)
+        return snh_data
+
+    def get_agent_dns_entries(self):
+        #Return AgentDnsEntries by dict
+        path = 'Snh_ShowDnsEntries'
+        rsp = self.get_snhdict(path)
+        snh_data = self.get_snh_dict_data(rsp)
+        return snh_data
+
+    def get_vm_vdns_data(self, index=''):
+        #Return VmVdnsDataResponse by dict
+        path = 'Snh_VmVdnsDataReq?vm_interface_index=%s' % index
+        rsp = self.get_snhdict(path)
+        snh_data = self.get_snh_dict_data(rsp)
+        return snh_data
+
+    def get_vm_vdns_list(self):
+        #Return VmVdnsListResponse by dict
+        path = 'Snh_VmVdnsListReq'
+        rsp = self.get_snhdict(path)
+        snh_data = self.get_snh_dict_data(rsp)
+        return snh_data
+
+    def get_fip_vdns_data(self):
+        #Return FipVdnsDataResponse by dict
+        path = 'Snh_FipVdnsDataReq'
+        rsp = self.get_snhdict(path)
+        snh_data = self.get_snh_dict_data(rsp)
+        return snh_data
+
+    def get_show_arp_cache(self):
+        #Return ArpCacheResp by dict
+        path = 'Snh_ShowArpCache'
+        rsp = self.get_snhdict(path)
+        snh_data = self.get_snh_dict_data(rsp)
+        return snh_data
+
+    def get_gw_dhcp_leases(self):
+        #Return GwDhcpLeasesResponse by dict
+        path = 'Snh_ShowGwDhcpLeases'
         rsp = self.get_snhdict(path)
         snh_data = self.get_snh_dict_data(rsp)
         return snh_data
@@ -448,13 +560,11 @@ class GetContrailSandesh(object):
                     value_list = value_list[key]
             if type(value_list) == dict:
                 data = value_list
-                key_list = data.keys()
-                val_pair = self.get_key_pair(data, key_list)
+                val_pair = self.get_key_pair(data)
                 all_snh_list.append(val_pair)
             elif type(value_list) == list:
                 for data in value_list:
-                    key_list = data.keys()
-                    val_pair = self.get_key_pair(data, key_list)
+                    val_pair = self.get_key_pair(data)
                     all_snh_list.append(val_pair)
             else:
                 all_snh_list.append(value_list)
@@ -467,13 +577,11 @@ class GetContrailSandesh(object):
                         value_list = value_list[key]
                 if type(value_list) == dict:
                     data = value_list
-                    key_list = data.keys()
-                    val_pair = self.get_key_pair(data, key_list)
+                    val_pair = self.get_key_pair(data)
                     all_snh_list.append(val_pair)
                 elif type(value_list) == list:
                     for data in value_list:
-                        key_list = data.keys()
-                        val_pair = self.get_key_pair(data, key_list)
+                        val_pair = self.get_key_pair(data)
                         all_snh_list.append(val_pair)
                 else:
                     all_snh_list.append(value_list)
@@ -494,10 +602,10 @@ class GetContrailSandesh(object):
             if type(tdata[i]) == dict and tdata[i].has_key('list'):
                 key = tdata[i]['list'].keys()
                 tkeys = ['list',key[0]]
-                get_data = self.get_all_snh_dict(tdata[i], tkeys)
+                gdata = self.get_all_snh_dict(tdata[i], tkeys)
         all_snh_list = []
 
-        for i in get_data:
+        for i in gdata:
             tdata = i
             rkeys = i.keys()
             try:
@@ -513,7 +621,8 @@ class GetContrailSandesh(object):
         
         return all_snh_list
         
-    def get_key_pair(self, data, key_list):
+    def get_key_pair(self, data):
+        key_list = data.keys()
         data_pair = {}
         for key in key_list:
             if type(data[key]) == str:
@@ -539,7 +648,6 @@ class GetContrailSandesh(object):
                             dt[k] = dt[k]['#text']
                         except:
                             dt[k] = None
-                            pass
                     elif type(dt[k]) == dict:
                         dt[k] = self.get_data(dt[k])
                         dt[k] = self.get_snh_list(dt[k])
@@ -553,7 +661,6 @@ class GetContrailSandesh(object):
                                             idt[ik] = idt[ik]['#text']
                                         except:
                                             idt[ik] = None
-                                            pass
                                     elif type(idt[ik]) == dict:
                                         idt[ik] = self.get_data(idt[ik])
                                         idt[ik] = self.get_list(idt[ik])
@@ -564,9 +671,10 @@ class GetContrailSandesh(object):
      
     def get_snh_dict_data(self,data):
         key = data.keys()
-        if key[0].find('') == 0:
-             data = data[key[0]]
-        key = data.keys()
+        if key[0].find(r'__') == 0:
+            data = data[key[0]]
+            key = data.keys()
+
         try:
             key.remove('Pagination')
         except:
@@ -575,36 +683,64 @@ class GetContrailSandesh(object):
             key.remove('OvsdbPageResp')
         except:
             pass
-        data = data[key[0]]
-        
-        if type(data) == dict:
-            data = self.get_nest_data(data)
-            return data
-        elif type(data) == list:
-            all_data = []
-            for idata in data:
-                ndata = self.get_nest_data(idata)
-                all_data = all_data + ndata
-            return all_data
-            
+
+        rdata = {}
+        for k in key:
+            if type(data[k]) == dict:
+                rdata[k] = self.get_nest_data(data[k])
+            elif type(data[k]) == list:
+                all_data = {}
+                for idata in data[k]:
+                    ndata = self.get_nest_data(idata)
+                    all_data.update(ndata)
+                rdata[k] = all_data
+
+        return rdata
+
+
     def get_nest_data(self,data):
-        rkeys = data.keys()
         try:
-            rkeys.remove('more')
+            del data['more']
         except:
             pass
-        data = self.get_data(data[rkeys[0]])
-        if type(data[0]) != dict:
-            return None
-        data = self.get_snh_list(data)
 
-        return data
+        all_rdata = {}
+        for key in data:
+            try:
+                if data[key].has_key('@type'):
+                   ddict = {} 
+                   try:
+                       ddict[key] = data[key]['#text']
+                       all_rdata[key] = ddict[key]
+                   except:
+                       pass
+                else:   
+                    rdata = self.get_data(data[key])
+                    if type(rdata) == dict:
+                        if rdata.has_key('element'):
+                            rdata = rdata['element']
+                    elif type(rdata[0]) != dict:
+                        rdata = None
+                    else:
+                        rdata = self.get_snh_list(rdata)
+                    all_rdata[key] = rdata
+            except:
+                pass
+    
+        return all_rdata
     
     def get_data(self,data):
         while True:
             key = data.keys()
-            if type(data[key[0]]) == str:
+            if len(key) != 1:
+               data = self.get_nest_data(data)
+               return data
+            elif type(data[key[0]]) == str:
                 break
+            elif type(data[key[0]]) == dict:
+                if data[key[0]].has_key('element') == True:
+                    data = data[key[0]]
+                    return data
             data = data[key[0]]
             if key[0].islower() == False:
                 break

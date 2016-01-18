@@ -1,4 +1,5 @@
 import argparse
+import sys
 from contrail_sandeshlibs import *
 
 def fix_cont(ipaddr):
@@ -19,10 +20,16 @@ def get_bum_list(host_id,vni):
     getsnh = GetContrailSandesh(hostname=host_id)
     tap_list = []
     tunnel_list = []
-    vni_nhid = getsnh.get_kvxlan_list(vni)[0]['nhid']
-    vrf_id = getsnh.get_knh_list(14)[0]['vrf']
-    l2route_list = getsnh.get_layer2_route_list(vrf_id)
-    for i in l2route_list:
+    try:
+        vni_nhid = getsnh.get_kvxlan(vni)['KVxLanResp']['vxlan_list'][0]['nhid']
+    except:
+         msg = "KeyError: Could not get VNI:%s" % vni
+         print msg
+         sys.exit(1)
+
+    vrf_id = getsnh.get_knh(vni_nhid)['KNHResp']['nh_list'][0]['vrf']
+    l2route_list = getsnh.get_layer2_route(vrf_id)
+    for i in l2route_list['BridgeRouteResp']['route_list']:
         if i['mac'] == 'ff:ff:ff:ff:ff:ff':
             data = i
     
@@ -34,17 +41,21 @@ def get_bum_list(host_id,vni):
     nh_id_list.append(data['nh'][0]['nh_index'])
     while len(nh_id_list) > 0:
         for i in nh_id_list:
-            data = getsnh.get_knh_list(i)
+            data = getsnh.get_knh(i)
+            data = data['KNHResp']['nh_list']
             if data[0]['type'] == 'COMPOSITE':
                 nh_id_list.remove(i)
-                for i in data[0]['component_nh']:
-                    nh_id_list.append(i['nh_id'])
+                try: 
+                    for i in data[0]['component_nh']:
+                        nh_id_list.append((i['nh_id']))
+                except:
+                    pass
             elif data[0]['type'] == 'TUNNEL':
                 nh_id_list.remove(i)
                 tunnel_list.append(data[0])
             elif data[0]['type'] == 'ENCAP':
                 nh_id_list.remove(i)
-                for i in getsnh.get_itf_list():
+                for i in getsnh.get_itf()['ItfResp']['itf_list']:
                     if i['index'] == data[0]['encap_oif_id']:
                         tap_list.append(i)
             else:
