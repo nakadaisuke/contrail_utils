@@ -62,7 +62,7 @@ def get_bum_list(host_id,vni):
                 nh_id_list.remove(i)
     return tap_list,tunnel_list
 
-def print_data(host_id,vni,tap_list,tunnel_list):
+def print_data(host_id,vni,tap_list,tunnel_list,version):
     data = '### Host %s VNI %s BUM Tree ###\n' % (host_id, vni)
     if len(tap_list) > 0:
         data += '---- TAP interfaces ----\n'
@@ -73,24 +73,30 @@ def print_data(host_id,vni,tap_list,tunnel_list):
     if len(tunnel_list) > 0:
         data += '---- Tunnel interfaces ----\n'
         for i in tunnel_list:
-            tun_sip = fix_cont(i['tun_sip'])
-            tun_dip = fix_cont(i['tun_dip'])
+            if float(version) < 2.22:
+                tun_sip = fix_cont(i['tun_sip'])
+                tun_dip = fix_cont(i['tun_dip'])
+            else:
+                tun_sip = i['tun_sip']
+                tun_dip = i['tun_dip']
             encap = encap_chk(i['flags'])
             data +=  'SIP:%-15s DIP:%-15s Encap:%s\n' % (tun_sip,tun_dip,encap)
     return data
 
 def main():
     parser = argparse.ArgumentParser(description='Display Mcast Tree')
-    parser.add_argument('-t', '--target', dest='host_id', help='vRouter IP address')
-    parser.add_argument('-v', '--vni', dest='vni', help='VXLAN Network Identifier')
-    parser.add_argument('-m', '--mac', dest='mac_flag', help='Disable MAC address')
+    parser.add_argument('-t', dest='host_id', help='vRouter IP address')
+    parser.add_argument('-v', dest='vni', help='VXLAN Network Identifier')
+    parser.add_argument('-m', dest='mac_flag', help='Disable MAC address')
+    parser.add_argument('-c', dest='contrail_ver',default=2.21, help='set_contrail_version')
     args = parser.parse_args()
     
     host_id = args.host_id
     vni = args.vni
+    contrail_ver = args.contrail_ver
 
     tap_list,tunnel_list = get_bum_list(host_id,vni)
-    pdata = print_data(host_id,vni,tap_list,tunnel_list)
+    pdata = print_data(host_id,vni,tap_list,tunnel_list,contrail_ver)
     print pdata
     
 if __name__ == "__main__":
