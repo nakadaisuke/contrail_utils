@@ -1,5 +1,5 @@
 import sys
-import xmldict
+import xmltodict
 import urllib2
 from xml.etree.ElementTree import *
 
@@ -36,7 +36,7 @@ class GetContrailSandesh(object):
         except:
             self.error_msg('get_xml', url)
 
-        xml_dict = xmldict.xml_to_dict(xmldata)
+        xml_dict = xmltodict.parse(xmldata)
         return xml_dict
 
     def get_path_sandesh_to_dict(self,path):
@@ -436,228 +436,75 @@ class GetContrailSandesh(object):
         #Return ShowXmppConnectionResp by dict
         path = 'Snh_ShowXmppConnectionReq'
         return self.get_path_sandesh_to_dict(path)
-
-    def get_show_xmpp_connection(self):
-        #Return ShowXmppConnectionResp by dict
-        path = 'Snh_ShowXmppConnectionReq'
-        return self.get_path_sandesh_to_dict(path)
     # end xmpp_server introspect
 
-    def get_data_page(self, path):
-        try:
-            rsp = self.snhdict(path)
-            top_key = rsp.keys()
-            url = rsp[top_key[0]]['Pagination']['req']['PageReqData']['all']['#text']
-            all_path = 'Snh_PageReq?x=%s' % (url)
-            return all_path
-        except:
-            return False
-
-    def get_ovsdb_page(self, path):
-        try:
-            rsp = self.snhdict(path)
-            top_key = rsp.keys()
-            url = rsp[top_key[0]]['OvsdbPageResp']['req']['OvsdbPageRespData']['all']['#text']
-            all_path = 'Snh_OvsdbPageReq?x=%s' % (url)
-            return all_path
-        except:
-            return False
-
-    def get_all_snh_dict(self, root_dict, keys=None):
-        all_snh_list = []
-        if type(root_dict) == dict:
-            value_list = root_dict
-            if keys != None:
-                for key in keys:
-                    value_list = value_list[key]
-            if type(value_list) == dict:
-                data = value_list
-                val_pair = self.get_key_pair(data)
-                all_snh_list.append(val_pair)
-            elif type(value_list) == list:
-                for data in value_list:
-                    val_pair = self.get_key_pair(data)
-                    all_snh_list.append(val_pair)
-            else:
-                all_snh_list.append(value_list)
-
-        elif type(root_dict) == list:
-            for page in root_dict:
-                value_list = page
-                if keys != None:
-                    for key in keys:
-                        value_list = value_list[key]
-                if type(value_list) == dict:
-                    data = value_list
-                    val_pair = self.get_key_pair(data)
-                    all_snh_list.append(val_pair)
-                elif type(value_list) == list:
-                    for data in value_list:
-                        val_pair = self.get_key_pair(data)
-                        all_snh_list.append(val_pair)
-                else:
-                    all_snh_list.append(value_list)
-        else:
-            self.error_msg('get_all_snh_list','no valid list')
-
-        return all_snh_list
-
-    def get_all_snh(self, root_dict):
-        tdata = root_dict
-        rkeys = root_dict.keys()
-        try:
-            rkeys.remove('more')
-        except:
-            pass
-        
-        for i in rkeys:
-            if type(tdata[i]) == dict and tdata[i].has_key('list'):
-                key = tdata[i]['list'].keys()
-                tkeys = ['list',key[0]]
-                gdata = self.get_all_snh_dict(tdata[i], tkeys)
-        all_snh_list = []
-
-        for i in gdata:
-            tdata = i
-            rkeys = i.keys()
+    def del_unused_key(self,data):
+        key_list =['@type', '@identifier','@size', 'more', 'Pagination', 'OvsdbPageResp']
+        for i in key_list:
             try:
-                rkeys.remove('more')
+                del data[i]
             except:
                 pass
-            for i in rkeys:
-                if type(tdata[i]) == dict and tdata[i].has_key('list'):
-                    key = tdata[i]['list'].keys()
-                    tkeys = ['list',key[0]]
-                    tdata[i] = self.get_all_snh_dict(tdata[i], tkeys)
-            all_snh_list.append(tdata)
-        
-        return all_snh_list
-        
-    def get_key_pair(self, data):
-        key_list = data.keys()
-        data_pair = {}
-        for key in key_list:
-            if type(data[key]) == str:
-                return data[key]
-            if data[key].has_key('@type'):
-                if data[key].has_key('#text'):
-                    data_pair[key] = data[key]['#text']
-                else:
-                    data_pair[key] = None
-            elif type(data[key]) == list or type(data[key]) == dict:
-                data_pair[key] = data[key]
-            else:
-                data_pair[key] = None
-        return data_pair
-
-    def get_snh_list(self,data):
-        snh_list = []
-        for dt in data:
-            if type(dt) == dict:
-                for k in dt.keys():
-                    if type(dt[k]) == dict and (dt[k]).has_key('@type') ==True:
-                        try:
-                            dt[k] = dt[k]['#text']
-                        except:
-                            dt[k] = None
-                    elif type(dt[k]) == dict:
-                        dt[k] = self.get_data(dt[k])
-                        dt[k] = self.get_snh_list(dt[k])
-                    elif type(dt[k]) == list:
-                        dt_list = []
-                        for idt in dt[k]:
-                            if type(idt) == dict:
-                                for ik in idt.keys():
-                                    if type(idt[ik]) == dict and (idt[ik]).has_key('@type') == True:
-                                        try:
-                                            idt[ik] = idt[ik]['#text']
-                                        except:
-                                            idt[ik] = None
-                                    elif type(idt[ik]) == dict:
-                                        idt[ik] = self.get_data(idt[ik])
-                                        idt[ik] = self.get_list(idt[ik])
-                            dt_list.append(idt)
-                        dt[k] = dt_list
-            snh_list.append(dt)
-        return snh_list
-     
+        return data
+    
     def get_snh_dict_data(self,data):
         key = data.keys()
         if key[0].find(r'__') == 0:
             data = data[key[0]]
-            key = data.keys()
+        data = self.del_unused_key(data)
+        return_list = []
+        return_dict = {}
+        key = data.keys()
+        for i in key:
+             return_dict[i] = self.get_data(data[i])
+        return return_dict
 
-        try:
-            key.remove('Pagination')
-        except:
-            pass
-        try:
-            key.remove('OvsdbPageResp')
-        except:
-            pass
-
-        rdata = {}
-        for k in key:
-            if type(data[k]) == dict:
-                rdata[k] = self.get_nest_data(data[k])
-            elif type(data[k]) == list:
-                all_data = {}
-                for idata in data[k]:
-                    ndata = self.get_nest_data(idata)
-                    all_data.update(ndata)
-                rdata[k] = all_data
-
-        return rdata
-
-
-    def get_nest_data(self,data):
-        try:
-            del data['more']
-        except:
-            pass
-
-        all_rdata = {}
-        for key in data:
-            try:
-                if data[key].has_key('@type'):
-                   ddict = {} 
-                   try:
-                       ddict[key] = data[key]['#text']
-                       all_rdata[key] = ddict[key]
-                   except:
-                       pass
-                else:   
-                    rdata = self.get_data(data[key])
-                    if type(rdata) == dict:
-                        if rdata.has_key('element'):
-                            rdata = rdata['element']
-                    elif type(rdata[0]) != dict:
-                        rdata = None
-                    else:
-                        rdata = self.get_snh_list(rdata)
-                    all_rdata[key] = rdata
-            except:
-                pass
-    
-        return all_rdata
-    
     def get_data(self,data):
-        while True:
-            key = data.keys()
-            if len(key) != 1:
-               data = self.get_nest_data(data)
-               return data
-            elif type(data[key[0]]) == str:
-                break
-            elif type(data[key[0]]) == dict:
-                if data[key[0]].has_key('element') == True:
+        if type(data) == list:
+            data_list = []
+            for i in data:
+                data_dict = self.get_data(i)
+                data_list.append(data_dict)
+            return_data = data_list
+        elif type(data) != list:
+            if data.has_key('@type'):
+                if data['@type'] == 'sandesh':
+                    sandesh_dict = {}
+                    data = self.del_unused_key(data)
+                    key = data.keys()
+                    for i in key:
+                        sandesh_dict[i] = self.get_data(data[i])
+                    return_data = sandesh_dict
+                elif data['@type'] == 'list':
+                    data = self.del_unused_key(data)
+                    key = data.keys()
                     data = data[key[0]]
-                    return data
-            data = data[key[0]]
-            if key[0].islower() == False:
-                break
-        data = self.get_all_snh_dict(data)
-        return data
+                    return_data = self.get_data(data)
+                elif data['@type'] == 'struct':
+                    return_list = []
+                    data = self.del_unused_key(data)
+                    if len(data) == 0:
+                        return ''
+                    keys = data.keys()
+                    for i in keys:
+                        sdata = self.get_data(data[i])
+                    return_data = sdata 
+                elif data['@type'] in ['i64', 'i32', 'i16', 'u64', 'u32', 'u16', 'double', 'string', 'bool']:
+                    if data.has_key('#text'):
+                        return_data = data['#text']
+                    else:
+                        return_data = ''
+            elif data.has_key('element'):
+                return_data =  data['#text']
+            else:
+                data_dict = {}
+                return_list = []
+                data = self.del_unused_key(data)
+                for i in data:
+                     data_dict[i]= self.get_data(data[i])
+                return_data = data_dict
+        return return_data
+    
     
     def error_msg(self, oper, msg):
         msg = '\nFaild to get %s: %s\n' % (oper,msg)
