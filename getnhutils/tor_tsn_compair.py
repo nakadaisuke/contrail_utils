@@ -1,3 +1,6 @@
+#
+# Copyright (c) 2016 Daisuke Nakajima. All rights reserved.
+#
 import argparse
 import sys
 import copy
@@ -247,7 +250,7 @@ class CompareOvsdbTsn(object):
             remote_macs = remote_macs['OvsdbUnicastMacRemoteResp']['macs']
             if len(remote_macs) != 0:
                 for j in remote_macs:
-                    if j['dest_ip'] != 0 and j['self_exported'] == 'false':
+                    if j['dest_ip'] != '' and j['self_exported'] == 'false':
                         remote_macs_list.append(j)
         
         tsn_uc_remote_mac_list = []
@@ -263,3 +266,58 @@ class CompareOvsdbTsn(object):
             ovsdb_uc_remote_mac_list.append(uc_remote_mac_list)
         chk_list = self.compair_tables(tsn_uc_remote_mac_list,ovsdb_uc_remote_mac_list)
         return chk_list
+
+def show_compare_result(verbose,chk_list):
+    msg = ''
+    for i in chk_list.keys():
+        msg += '-------- %s Table --------\n' % i
+        if verbose == 'True':
+            for j in chk_list[i]:
+                j = j[1:]
+                j = str(j)
+                msg += j + '\n'
+        else:
+            false_msg = ''
+            for j in chk_list[i]:
+                if j[0]['flag'] != True:
+                    j = j[1:]
+                    j = str(j)
+                    false_msg += j + '\n'
+            if len(false_msg) == 0:
+                msg += 'Sync all data\n'
+            else:
+                msg += false_msg
+    print msg
+
+def main():
+    parser = argparse.ArgumentParser(description='Compair Contrail TSN with OVSDB database in ToR Switch')
+    parser.add_argument('-t', dest='tsn_ip', help='TSN IP address and port list')
+    parser.add_argument('-o', dest='ovsdb_db', help='OVSDB database IP address and port')
+    parser.add_argument('-v', dest='verbose',default=False, help='Show all of comparison data. Set True or False')
+    args = parser.parse_args()
+    
+    tsn_list = args.tsn_ip
+    ovsdb_ip = args.ovsdb_db
+    verbose = args.verbose
+    tsn_list= tsn_list.split(',')
+
+    try: 
+        server = CompareOvsdbTsn(tsn_list)
+    except:
+        msg = 'Could not initialize'
+	raise 
+    
+    tsn_table,ovsdb_table = server.get_tsn_ovsdb_dump(ovsdb_ip)
+    chk_list = {}
+    chk_list['Physical_Switch'] = server.chk_physical_switch(tsn_table,ovsdb_table)
+    chk_list['Logical_Switch'] = server.chk_logical_switch(tsn_table,ovsdb_table)
+    chk_list['Mcast_Macs_Local'] = server.chk_mcast_macs_local(tsn_table,ovsdb_table)
+    chk_list['Mcast_Macs_Remote'] = server.chk_mcast_macs_remote(tsn_table,ovsdb_table)
+    chk_list['Physical_Port'] = server.chk_physical_port(tsn_table,ovsdb_table)
+    chk_list['Ucast_Macs_local'] = server.chk_ucast_macs_local(tsn_table,ovsdb_table)
+    chk_list['Ucast_Macs_Remote'] = server.chk_ucast_macs_remote(tsn_table,ovsdb_table)
+    
+    show_compare_result(verbose,chk_list)
+
+if __name__ == "__main__":
+    main()
