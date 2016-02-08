@@ -1,7 +1,9 @@
 import socket
 import json
 
+
 class GetOvsdbColumns(object):
+
     def __init__(self, hostname="127.0.0.1", port=9999, *args, **karwgs):
         self.hostname = hostname
         self.port = port
@@ -13,17 +15,17 @@ class GetOvsdbColumns(object):
         try:
             self.socket.connect((self.hostname, self.port))
         except socket.error, e:
-            errcode=e[0]
-            if errcode==106:
+            errcode = e[0]
+            if errcode == 106:
                 print "Connection already available"
                 pass
-            if errcode==111:
-                print "Connection refused %s:%s" % (hostname,port)
+            if errcode == 111:
+                print "Connection refused %s:%s" % (self.hostname, self.port)
 
     def close_socket(self):
-            self.socket.close()
+        self.socket.close()
 
-    def get_json(self,columns_list):
+    def get_json(self, columns_list):
         response = ''
         msg = ''
         lc = rc = 0
@@ -42,15 +44,17 @@ class GetOvsdbColumns(object):
                     return msg
 
     def get_ovsdb_table(self):
-        json_msg = {'method': 'get_schema','params': ['hardware_vtep'], 'id': 0}
+        json_msg = {'method': 'get_schema',
+                    'params': ['hardware_vtep'], 'id': 0}
         row_data = self.get_json(json_msg)
         row_table = row_data['result']['tables']
         table_list = row_table.keys()
         return table_list
 
     def get_table_schema(self, table):
-        param = ['hardware_vtep',{'op':'select','table':table,'where':[]}]
-        json_msg = {'method': 'transact','id': 0, 'params': param }
+        param = ['hardware_vtep', {
+            'op': 'select', 'table': table, 'where': []}]
+        json_msg = {'method': 'transact', 'id': 0, 'params': param}
         json_data = self.get_json(json_msg)
         return json_data
 
