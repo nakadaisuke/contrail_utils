@@ -15,15 +15,13 @@ class GetContrailSandesh(object):
         all_path = ''
         try:
             top_key = data.keys()
-            url = data[top_key[0]]['Pagination'][
-                'req']['PageReqData']['all']['#text']
+            url = data[top_key[0]]['Pagination']['req']['PageReqData']['all']['#text']
             all_path = 'Snh_PageReq?x=%s' % (url)
         except:
             pass
         try:
             top_key = data.keys()
-            url = data[top_key[0]]['OvsdbPageResp'][
-                'req']['OvsdbPageRespData']['all']['#text']
+            url = data[top_key[0]]['OvsdbPageResp']['req']['OvsdbPageRespData']['all']['#text']
             all_path = 'Snh_OvsdbPageReq?x=%s' % (url)
         except:
             pass

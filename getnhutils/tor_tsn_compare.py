@@ -29,8 +29,8 @@ class CompareOvsdbTsn(object):
     def get_active_tor(self, tsn_list):
         for i in tsn_list:
             tor_ip_port = i.split(':')
-            tsn = GetContrailSandesh(hostname=tor_ip_port[
-                                     0], port=tor_ip_port[1])
+            tsn = GetContrailSandesh(hostname=tor_ip_port[0],
+                                     port=tor_ip_port[1])
             ovsdb_pswitch = tsn.get_ovsdb_physical_switch()
             if type(ovsdb_pswitch['OvsdbPhysicalSwitchResp']['pswitch']) == dict:
                 return tor_ip_port
@@ -167,8 +167,7 @@ class CompareOvsdbTsn(object):
     def chk_mcast_macs_local(self, tsn_table, ovsdb_table):
         tor_tunnel_ip = tsn_table['tsn_psw'][
             'OvsdbPhysicalSwitchResp']['pswitch']['tunnel_ip']
-        tsn_table = tsn_table['tsn_mc_mac_local'][
-            'OvsdbMulticastMacLocalResp']['macs']
+        tsn_table = tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']['macs']
         tsn_mc_mac_list = []
         for i in tsn_table:
             mc_mac_list = [i['state'], i['mac'], i[
@@ -192,8 +191,7 @@ class CompareOvsdbTsn(object):
     def chk_mcast_macs_remote(self, tsn_table, ovsdb_table):
         tor_ip = tsn_table['tsn_client'][
             'OvsdbClientResp']['client']['tor_service_node']
-        tsn_table = tsn_table['tsn_mc_mac_local'][
-            'OvsdbMulticastMacLocalResp']['macs']
+        tsn_table = tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']['macs']
         tsn_mc_mac_list = []
         for i in tsn_table:
             mc_mac_list = [i['state'], i['mac'], i['logical_switch'], tor_ip]

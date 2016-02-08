@@ -44,16 +44,14 @@ class GetOvsdbColumns(object):
                     return msg
 
     def get_ovsdb_table(self):
-        json_msg = {'method': 'get_schema',
-                    'params': ['hardware_vtep'], 'id': 0}
+        json_msg = {'method': 'get_schema', 'params': ['hardware_vtep'], 'id': 0}
         row_data = self.get_json(json_msg)
         row_table = row_data['result']['tables']
         table_list = row_table.keys()
         return table_list
 
     def get_table_schema(self, table):
-        param = ['hardware_vtep', {
-            'op': 'select', 'table': table, 'where': []}]
+        param = ['hardware_vtep', {'op': 'select', 'table': table, 'where': []}]
         json_msg = {'method': 'transact', 'id': 0, 'params': param}
         json_data = self.get_json(json_msg)
         return json_data
