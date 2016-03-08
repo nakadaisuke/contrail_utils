@@ -27,6 +27,19 @@ class GetContrailSandesh(object):
             pass
         if all_path != '':
             data = self.snhdict(all_path)
+        keys = data.keys()
+        if data[keys[0]].has_key('next_batch') == True:
+            batch_data = data.copy()
+            while True:
+                if data[keys[0]]['next_batch'].has_key('#text') == True:
+                    path1 = data[keys[0]]['next_batch']['@link']
+                    path2 = data[keys[0]]['next_batch']['#text']
+                    path = 'Snh_%s?x=%s' % (path1,path2)
+                    data = self.snhdict(path)
+                    batch_data.update(data)
+                else:
+                    break
+            data = batch_data
         return data
 
     def snhdict(self, path):
@@ -458,6 +471,13 @@ class GetContrailSandesh(object):
         path = 'Snh_ShowXmppConnectionReq'
         return self.get_path_sandesh_to_dict(path)
     # end xmpp_server introspect
+
+    # start ifmap_server introspect
+    def get_ifmap_table_show(self, table_name='', search_string=''):
+        # Return IFMapTableShowReq by dict
+        path = 'Snh_IFMapTableShowReq?table_name=%s&search_string=%s' % (table_name, search_string)
+        return self.get_path_sandesh_to_dict(path)
+    # end ifmap_server introspect
 
     def del_unused_key(self, data):
         key_list = ['@type', '@identifier', '@size',

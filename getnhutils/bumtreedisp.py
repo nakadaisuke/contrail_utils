@@ -49,8 +49,12 @@ def get_bum_list(host_id, vni):
             if data['type'] == 'COMPOSITE':
                 nh_id_list.remove(i)
                 try:
-                    for i in data['component_nh']:
-                        nh_id_list.append((i['nh_id']))
+                    if type(data['component_nh']) == list:
+                        for i in data['component_nh']:
+                            nh_id_list.append((i['nh_id']))
+                            print nh_id_list
+                    else:
+                        nh_id_list.append((data['component_nh']['nh_id']))
                 except:
                     pass
             elif data['type'] == 'TUNNEL':
