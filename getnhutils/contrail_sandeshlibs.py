@@ -1,4 +1,5 @@
 import sys
+import copy
 import xmltodict
 import urllib2
 from xml.etree.ElementTree import *
@@ -29,19 +30,39 @@ class GetContrailSandesh(object):
             data = self.snhdict(all_path)
         keys = data.keys()
         if data[keys[0]].has_key('next_batch') == True:
-            batch_data = data.copy()
             while True:
                 if data[keys[0]]['next_batch'].has_key('#text') == True:
+                    old_data = data.copy()
                     path1 = data[keys[0]]['next_batch']['@link']
                     path2 = data[keys[0]]['next_batch']['#text']
                     path = 'Snh_%s?x=%s' % (path1,path2)
                     data = self.snhdict(path)
-                    batch_data.update(data)
+                    old_list = self.find_ifmap_list(old_data)
+                    self.merge_ifmap_list(data, old_list)
                 else:
                     break
-            data = batch_data
         return data
 
+    def find_ifmap_list(self, data):
+         except_keys = ['@type', '@identifier', '@size', 'table_size', 'next_batch', 'more']
+         for k in data:
+             if type(data[k]) != list:
+                 if k not in except_keys:
+                     return self.find_ifmap_list(data[k])
+             else:
+                 temp_list = data[k]
+                 return copy.copy(temp_list)
+    
+    def merge_ifmap_list(self, data, next_list):
+         except_keys = ['@type', '@identifier', '@size', 'table_size', 'next_batch', 'more']
+         for k in data:
+             if type(data[k]) != list:
+                 if k not in except_keys:
+                     return self.merge_ifmap_list(data[k], next_list)
+             else:
+                 data[k] += (next_list)
+         return data
+    
     def snhdict(self, path):
         url = 'http://%s:%s/%s' % (self.hostname, self.port, path)
         req = urllib2.Request(url)
@@ -473,15 +494,122 @@ class GetContrailSandesh(object):
     # end xmpp_server introspect
 
     # start ifmap_server introspect
-    def get_ifmap_table_show(self, table_name='', search_string=''):
+    def get_ifmap_table_show(self, table_name='', search_string='', ifmap_dump=False):
         # Return IFMapTableShowReq by dict
+        try:
+            self.ifmap_dump_chk(ifmap_dump, local_args = locals())
+        except:
+            print "Warning! No argument. ifmap_dump might comsume high CPU: Need argument"
+            raise
+
         path = 'Snh_IFMapTableShowReq?table_name=%s&search_string=%s' % (table_name, search_string)
+        return self.get_path_sandesh_to_dict(path)
+
+    def get_ifmap_link_table_show(self, search_string='', ifmap_dump=False):
+        # Return IFMapLinkTableShowReq by dict
+        try:
+            self.ifmap_dump_chk(ifmap_dump, local_args = locals())
+        except:
+            print "Warning! No argument. ifmap_dump might comsume high CPU: Need argument"
+            raise
+
+        path = 'Snh_IFMapLinkTableShowReq?search_string=%s' % (search_string)
+        return self.get_path_sandesh_to_dict(path)
+
+    def get_ifmap_update_queue_show(self):
+        # Return IFMapUpdateQueueShowResp by dict
+        path = 'Snh_IFMapUpdateQueueShowReq'
+        return self.get_path_sandesh_to_dict(path)
+
+    def get_ifmap_xmpp_client_info_show(self):
+        # Return IFMapXmppClientInfoShowResp by dict
+        path = 'Snh_IFMapXmppClientInfoShowReq'
+        return self.get_path_sandesh_to_dict(path)
+
+    def get_ifmap_server_client_show(self):
+        # Return IFMapServerClientShowResp by dict
+        path = 'Snh_IFMapServerClientShowReq'
+        return self.get_path_sandesh_to_dict(path)
+
+    def get_ifmap_per_client_nodes_show(self, client_index_or_name='', search_string='', ifmap_dump=False):
+        # Return IFMapPerClientNodesShowReq by dict
+        try:
+            self.ifmap_dump_chk(ifmap_dump, local_args = locals())
+        except:
+            print "Warning! No argument. Key error: Need argument"
+            raise
+
+        path = 'Snh_IFMapPerClientNodesShowReq?client_index_or_name=%s&search_string=%s' % (client_index_or_name, search_string)
+        return self.get_path_sandesh_to_dict(path)
+
+    def get_ifmap_per_client_links_show(self, client_index_or_name='', search_string='', ifmap_dump=False):
+        # Return IFMapPerClientLinksShowReq by dict
+        try:
+            self.ifmap_dump_chk(ifmap_dump, local_args = locals())
+        except:
+            print "Warning! No argument. Key error: Need argument"
+            raise
+
+        path = 'Snh_IFMapPerClientLinksShowReq?client_index_or_name=%s&search_string=%s' % (client_index_or_name, search_string)
+        return self.get_path_sandesh_to_dict(path)
+
+    def get_ifmap_node__show(self, fq_node_name='', ifmap_dump=False):
+        # Return IFMapNodeShowResp by dict
+        try:
+            self.ifmap_dump_chk(ifmap_dump, local_args = locals())
+        except:
+            print "Warning! No argument. Key error: Need argument"
+            raise
+
+        path = 'Snh_IFMapNodeShowReq?fq_node_name=%s' % (fq_node_name)
+        return self.get_path_sandesh_to_dict(path)
+
+    def get_ifmap_xmpp_show(self):
+        # Return IFMapXmppShowResp by dict
+        path = 'Snh_IFMapXmppShowReq'
+        return self.get_path_sandesh_to_dict(path)
+
+    def get_ifmap_peer_server_show(self):
+        # Return IFMapPeerServerInfoResp by dict
+        path = 'Snh_IFMapPeerServerInfoReq'
+        return self.get_path_sandesh_to_dict(path)
+
+    def get_ifmap_uuid_to_node_mapping(self):
+        # Return IFMapUuidToNodeMappingResp by dict
+        path = 'Snh_IFMapUuidToNodeMappingReq'
+        return self.get_path_sandesh_to_dict(path)
+
+    def get_ifmap_node_to_uuid_mapping(self):
+        # Return IFMapNodeToUuidMappingResp by dict
+        path = 'Snh_IFMapNodeToUuidMappingReq'
+        return self.get_path_sandesh_to_dict(path)
+
+    def get_ifmap_pending_vm_req(self):
+        # Return IFMapPendingVmRegResp by dict
+        path = 'Snh_IFMapPendingVmRegReq'
+        return self.get_path_sandesh_to_dict(path)
+
+    def get_ifmap_node_table_list_show(self):
+        # Return IFMapNodeTableListShowResp by dict
+        path = 'Snh_IFMapNodeTableListShowReq'
         return self.get_path_sandesh_to_dict(path)
     # end ifmap_server introspect
 
+    def ifmap_dump_chk(self, ifmap_dump, local_args):
+        del local_args['ifmap_dump']
+        del local_args['self']
+        if ifmap_dump == False:
+            for k in local_args:
+                if local_args[k] != '':
+                    return True
+        else:
+            return True
+        raise
+
     def del_unused_key(self, data):
         key_list = ['@type', '@identifier', '@size',
-                    'more', 'Pagination', 'OvsdbPageResp']
+                    'more', 'Pagination', 'OvsdbPageResp',
+                    'next_batch']
         for i in key_list:
             try:
                 del data[i]
