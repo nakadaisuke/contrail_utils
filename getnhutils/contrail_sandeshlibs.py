@@ -2,7 +2,6 @@ import sys
 import copy
 import xmltodict
 import urllib2
-from xml.etree.ElementTree import *
 
 
 class GetContrailSandesh(object):
