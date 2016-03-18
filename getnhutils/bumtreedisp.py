@@ -11,9 +11,9 @@ def fix_cont(ipaddr):
 
 
 def encap_chk(encap):
-    if encap == 'VALID | TUNNEL_GRE ':
+    if encap == 'VALID | TUNNEL_GRE':
         return 'MPLSoGRE'
-    elif encap == 'VALID | TUNNEL_MPLS_UDP ':
+    elif encap == 'VALID | TUNNEL_MPLS_UDP':
         return 'MPLSoUDP'
     else:
         return 'VXLAN'
