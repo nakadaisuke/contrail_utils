@@ -40,18 +40,32 @@ class CompareOvsdbTsn(object):
 
     def get_tsn_ovsdb_dump(self, tor_conn):
         tor_conn_data = tor_conn.split(':')
-        dump_data = self.get_ovsdb_dump(
-            hostname=tor_conn_data[0], port=int(tor_conn_data[1]))
+        dump_data = self.get_ovsdb_dump(hostname=tor_conn_data[0], port=int(tor_conn_data[1]))
         tor_name = dump_data['Physical_Switch']['result'][0]['rows'][0]['name']
         if self.chk_tor_name(tor_name) is False:
-            msg = 'KeyError: Could not match ToR name %s' % tor_name
+            msg = 'KeyError: Could not match ToR name: %s' % tor_name
             print msg
             raise
 
-        tsn_key_list = {'tsn_client': 'get_ovsdb_client', 'tsn_psw': 'get_ovsdb_physical_switch', 'tsn_pport': 'get_ovsdb_physical_port', 'tsn_lsw': 'get_ovsdb_logical_switch',
-                        'tsn_vport': 'get_ovsdb_vlan_port_binding', 'tsn_uc_mac_local': 'get_ovsdb_unicast_mac_local', 'tsn_vrf': 'get_ovsdb_vrf', 'tsn_mc_mac_local': 'get_ovsdb_multicast_mac_local'}
-        ovsdb_key_list = ['Logical_Switch', 'Mcast_Macs_Local', 'Mcast_Macs_Remote', 'Physical_Locator',
-                          'Physical_Locator_Set', 'Physical_Port', 'Physical_Switch', 'Tunnel', 'Ucast_Macs_Local', 'Ucast_Macs_Remote']
+        tsn_key_list = {'tsn_client': 'get_ovsdb_client',
+                        'tsn_psw': 'get_ovsdb_physical_switch',
+                        'tsn_pport': 'get_ovsdb_physical_port',
+                        'tsn_lsw': 'get_ovsdb_logical_switch',
+                        'tsn_vport': 'get_ovsdb_vlan_port_binding',
+                        'tsn_uc_mac_local': 'get_ovsdb_unicast_mac_local',
+                        'tsn_vrf': 'get_ovsdb_vrf',
+                        'tsn_mc_mac_local': 'get_ovsdb_multicast_mac_local'}
+
+        ovsdb_key_list = ['Logical_Switch',
+                          'Mcast_Macs_Local',
+                          'Mcast_Macs_Remote',
+                          'Physical_Locator',
+                          'Physical_Locator_Set',
+                          'Physical_Port',
+                          'Physical_Switch',
+                          'Tunnel',
+                          'Ucast_Macs_Local',
+                          'Ucast_Macs_Remote']
 
         tsn_table = self.get_tsn_table(tsn_key_list)
         ovsdb_table = self.get_ovsdb_table(dump_data, ovsdb_key_list)
@@ -123,13 +137,11 @@ class CompareOvsdbTsn(object):
 
     def chk_tor_name(self, tor_name):
         ovsdb_pswitch = self.tsn.get_ovsdb_physical_switch()
-        if type(ovsdb_pswitch['OvsdbPhysicalSwitchResp']['pswitch']) == list:
-            tsn_tor_name = ovsdb_pswitch[
-                'OvsdbPhysicalSwitchResp']['pswitch'][0]['name']
-            if tor_name == tsn_tor_name:
-                return True
-            else:
-                return False
+        tsn_tor_name = ovsdb_pswitch['OvsdbPhysicalSwitchResp']['pswitch']['name']
+        if tor_name == tsn_tor_name:
+            return True
+        else:
+            return False
 
     def chk_physical_switch(self, tsn_table, ovsdb_table):
         tsn_table = tsn_table['tsn_psw']['OvsdbPhysicalSwitchResp']['pswitch']
@@ -151,9 +163,14 @@ class CompareOvsdbTsn(object):
         return [[flag, pw_data]]
 
     def chk_logical_switch(self, tsn_table, ovsdb_table):
-        tsn_table = tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']['lswitch']
+        if type(tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']) == list:
+            tsn_lsw_table = []
+            for i in tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']:
+                tsn_lsw_table = tsn_lsw_table + i['lswitch']
+        else:
+            tsn_lsw_table = tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']['lswitch']
         tsn_lsw_list = []
-        for i in tsn_table:
+        for i in tsn_lsw_table:
             lsw_list = [i['state'], i['name'], i['vxlan_id']]
             tsn_lsw_list.append(lsw_list)
         ovsdb_lsw_list = []
@@ -165,20 +182,21 @@ class CompareOvsdbTsn(object):
         return chk_list
 
     def chk_mcast_macs_local(self, tsn_table, ovsdb_table):
-        tor_tunnel_ip = tsn_table['tsn_psw'][
-            'OvsdbPhysicalSwitchResp']['pswitch']['tunnel_ip']
-        tsn_table = tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']['macs']
+        tor_tunnel_ip = tsn_table['tsn_psw']['OvsdbPhysicalSwitchResp']['pswitch']['tunnel_ip']
+        if type(tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']) == list:
+            tsn_mac_table = []
+            for i in tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']:
+                tsn_mac_table = tsn_mac_table + i['macs']
+        else:
+            tsn_mac_table = tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']['macs']
         tsn_mc_mac_list = []
-        for i in tsn_table:
-            mc_mac_list = [i['state'], i['mac'], i[
-                'logical_switch'], tor_tunnel_ip]
+        for i in tsn_mac_table:
+            mc_mac_list = [i['state'], i['mac'], i['logical_switch'], tor_tunnel_ip]
             tsn_mc_mac_list.append(mc_mac_list)
         ovsdb_mc_mac_list = []
         for i in ovsdb_table['Mcast_Macs_Local']:
-            logical_switch = self.get_lsw_uuid(
-                ovsdb_table, i['logical_switch'][1])
-            locator_set = self.get_locator_set_dst_ip(
-                ovsdb_table, i['locator_set'][1])
+            logical_switch = self.get_lsw_uuid(ovsdb_table, i['logical_switch'][1])
+            locator_set = self.get_locator_set_dst_ip(ovsdb_table, i['locator_set'][1])
             if i['MAC'] == 'unknown-dst':
                 mac = 'ff:ff:ff:ff:ff:ff'
             else:
@@ -189,11 +207,15 @@ class CompareOvsdbTsn(object):
         return chk_list
 
     def chk_mcast_macs_remote(self, tsn_table, ovsdb_table):
-        tor_ip = tsn_table['tsn_client'][
-            'OvsdbClientResp']['client']['tor_service_node']
-        tsn_table = tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']['macs']
+        tor_ip = tsn_table['tsn_client']['OvsdbClientResp']['client']['tor_service_node']
+        if type(tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']) == list:
+            tsn_mac_table = []
+            for i in tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']:
+                tsn_mac_table = tsn_mac_table + i['macs']
+        else:
+            tsn_mac_table = tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']['macs']
         tsn_mc_mac_list = []
-        for i in tsn_table:
+        for i in tsn_mac_table:
             mc_mac_list = [i['state'], i['mac'], i['logical_switch'], tor_ip]
             tsn_mc_mac_list.append(mc_mac_list)
         ovsdb_mc_mac_list = []
@@ -241,13 +263,20 @@ class CompareOvsdbTsn(object):
         return chk_list
 
     def chk_ucast_macs_local(self, tsn_table, ovsdb_table):
-        tsn_table = tsn_table['tsn_uc_mac_local'][
-            'OvsdbUnicastMacLocalResp']['macs']
-        tsn_uc_local_mac_list = []
-        for i in tsn_table:
-            uc_local_mac_list = [i['state'], i['mac'],
-                                 i['logical_switch'], i['dest_ip']]
-            tsn_uc_local_mac_list.append(uc_local_mac_list)
+        if tsn_table['tsn_uc_mac_local'].has_key('OvsdbUnicastMacLocalResp'):
+            if type(tsn_table['tsn_uc_mac_local']['OvsdbUnicastMacLocalResp']) == list:
+                tsn_mac_table = []
+                for i in tsn_table['tsn_uc_mac_local']['OvsdbUnicastMacLocalResp']:
+                    tsn_mac_table = tsn_mac_table + i['macs']
+            else:
+                tsn_mac_table = tsn_table['tsn_uc_mac_local']['OvsdbUnicastMacLocalResp']['macs']
+            tsn_uc_local_mac_list = []
+            for i in tsn_mac_table:
+                uc_local_mac_list = [i['state'], i['mac'],
+                                     i['logical_switch'], i['dest_ip']]
+                tsn_uc_local_mac_list.append(uc_local_mac_list)
+        else:
+            tsn_uc_local_mac_list = []
 
         ovsdb_uc_local_mac_list = []
         for i in ovsdb_table['Ucast_Macs_Local']:
@@ -262,7 +291,13 @@ class CompareOvsdbTsn(object):
 
     def chk_ucast_macs_remote(self, tsn_table, ovsdb_table):
         remote_macs_list = []
-        for i in tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']['lswitch']:
+        if type(tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']) == list:
+            tsn_lswitch_table = []
+            for i in tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']:
+               tsn_lswitch_table = tsn_lswitch_table + i['lswitch'] 
+        else:
+            tsn_lswitch_table = ['tsn_lsw']['OvsdbLogicalSwitchResp']['lswitch']
+        for i in tsn_lswitch_table:
             lsw_uuid = i['name']
             remote_macs = self.tsn.get_ovsdb_unicast_mac_remote(
                 logical_switch=lsw_uuid)
@@ -303,7 +338,7 @@ def show_compare_result(verbose, chk_list):
             false_msg = ''
             for j in chk_list[i]:
                 if j[0]['flag'] is not True:
-                    j = j[1:]
+                    j = j[0:]
                     j = str(j)
                     false_msg += j + '\n'
             if len(false_msg) == 0:
