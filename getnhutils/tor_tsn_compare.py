@@ -23,8 +23,7 @@ class CompareOvsdbTsn(object):
             return ovsdb_dump
         except:
             msg = 'KeyError: Could not get ovsdb dump %s:%s' % (hostname, port)
-            print msg
-            raise
+            raise Exception(msg)
 
     def get_active_tor(self, tsn_list):
         for i in tsn_list:
@@ -32,11 +31,10 @@ class CompareOvsdbTsn(object):
             tsn = GetContrailSandesh(hostname=tor_ip_port[0],
                                      port=tor_ip_port[1])
             ovsdb_pswitch = tsn.get_ovsdb_physical_switch()
-            if type(ovsdb_pswitch['OvsdbPhysicalSwitchResp']['pswitch']) == dict:
+            if ovsdb_pswitch['OvsdbPhysicalSwitchResp']['pswitch'] != '':
                 return tor_ip_port
         msg = 'KeyError: Could not get active TSN'
-        print msg
-        raise
+        raise Exception(msg)
 
     def get_tsn_ovsdb_dump(self, tor_conn):
         tor_conn_data = tor_conn.split(':')
@@ -44,8 +42,7 @@ class CompareOvsdbTsn(object):
         tor_name = dump_data['Physical_Switch']['result'][0]['rows'][0]['name']
         if self.chk_tor_name(tor_name) is False:
             msg = 'KeyError: Could not match ToR name: %s' % tor_name
-            print msg
-            raise
+            raise Exception(msg)
 
         tsn_key_list = {'tsn_client': 'get_ovsdb_client',
                         'tsn_psw': 'get_ovsdb_physical_switch',
@@ -137,7 +134,13 @@ class CompareOvsdbTsn(object):
 
     def chk_tor_name(self, tor_name):
         ovsdb_pswitch = self.tsn.get_ovsdb_physical_switch()
-        tsn_tor_name = ovsdb_pswitch['OvsdbPhysicalSwitchResp']['pswitch']['name']
+        ovsdb_pswitch = ovsdb_pswitch['OvsdbPhysicalSwitchResp']['pswitch']
+        if type(ovsdb_pswitch) is list:
+            for i in ovsdb_pswitch:
+                if i['state'] == 'In sync(4)':
+                    tsn_tor_name = i['name']
+        else:
+            tsn_tor_name = ovsdb_pswitch['name']
         if tor_name == tsn_tor_name:
             return True
         else:
@@ -163,6 +166,8 @@ class CompareOvsdbTsn(object):
         return [[flag, pw_data]]
 
     def chk_logical_switch(self, tsn_table, ovsdb_table):
+        if tsn_table['tsn_lsw'].has_key('OvsdbLogicalSwitchResp') == False:
+            raise Exception("No configration in TSN")
         if type(tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']) == list:
             tsn_lsw_table = []
             for i in tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']:
@@ -170,9 +175,13 @@ class CompareOvsdbTsn(object):
         else:
             tsn_lsw_table = tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']['lswitch']
         tsn_lsw_list = []
-        for i in tsn_lsw_table:
-            lsw_list = [i['state'], i['name'], i['vxlan_id']]
-            tsn_lsw_list.append(lsw_list)
+        if type(tsn_lsw_table) == list:
+            for i in tsn_lsw_table:
+                lsw_list = [i['state'], i['name'], i['vxlan_id']]
+                tsn_lsw_list.append(lsw_list)
+        else:
+            i = tsn_lsw_table
+            tsn_lsw_list.append([i['state'], i['name'], i['vxlan_id']])
         ovsdb_lsw_list = []
         for i in ovsdb_table['Logical_Switch']:
             ovsdb_name = i['name'].replace('Contrail-', '')
@@ -190,9 +199,13 @@ class CompareOvsdbTsn(object):
         else:
             tsn_mac_table = tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']['macs']
         tsn_mc_mac_list = []
-        for i in tsn_mac_table:
-            mc_mac_list = [i['state'], i['mac'], i['logical_switch'], tor_tunnel_ip]
-            tsn_mc_mac_list.append(mc_mac_list)
+        if type(tsn_mac_table) == list:
+            for i in tsn_mac_table:
+                mc_mac_list = [i['state'], i['mac'], i['logical_switch'], tor_tunnel_ip]
+                tsn_mc_mac_list.append(mc_mac_list)
+        else:
+            i = tsn_mac_table
+            tsn_mc_mac_list.append([i['state'], i['mac'], i['logical_switch'], tor_tunnel_ip])
         ovsdb_mc_mac_list = []
         for i in ovsdb_table['Mcast_Macs_Local']:
             logical_switch = self.get_lsw_uuid(ovsdb_table, i['logical_switch'][1])
@@ -215,9 +228,13 @@ class CompareOvsdbTsn(object):
         else:
             tsn_mac_table = tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']['macs']
         tsn_mc_mac_list = []
-        for i in tsn_mac_table:
-            mc_mac_list = [i['state'], i['mac'], i['logical_switch'], tor_ip]
-            tsn_mc_mac_list.append(mc_mac_list)
+        if type(tsn_mac_table) == list:
+            for i in tsn_mac_table:
+                mc_mac_list = [i['state'], i['mac'], i['logical_switch'], tor_ip]
+                tsn_mc_mac_list.append(mc_mac_list)
+        else:
+            i = tsn_mac_table
+            tsn_mc_mac_list.append([i['state'], i['mac'], i['logical_switch'], tor_ip])
         ovsdb_mc_mac_list = []
         for i in ovsdb_table['Mcast_Macs_Remote']:
             logical_switch = self.get_lsw_uuid(
@@ -296,11 +313,19 @@ class CompareOvsdbTsn(object):
             for i in tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']:
                tsn_lswitch_table = tsn_lswitch_table + i['lswitch'] 
         else:
-            tsn_lswitch_table = ['tsn_lsw']['OvsdbLogicalSwitchResp']['lswitch']
-        for i in tsn_lswitch_table:
-            lsw_uuid = i['name']
-            remote_macs = self.tsn.get_ovsdb_unicast_mac_remote(
-                logical_switch=lsw_uuid)
+            tsn_lswitch_table = tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']['lswitch']
+        if type(tsn_lswitch_table) == list:
+            for i in tsn_lswitch_table:
+                lsw_uuid = i['name']
+                remote_macs = self.tsn.get_ovsdb_unicast_mac_remote(logical_switch=lsw_uuid)
+                remote_macs = remote_macs['OvsdbUnicastMacRemoteResp']['macs']
+                if len(remote_macs) != 0:
+                    for j in remote_macs:
+                        if j['dest_ip'] != '' and j['self_exported'] == 'false':
+                            remote_macs_list.append(j)
+        else:
+            lsw_uuid = tsn_lswitch_table['name']
+            remote_macs = self.tsn.get_ovsdb_unicast_mac_remote(logical_switch=lsw_uuid)
             remote_macs = remote_macs['OvsdbUnicastMacRemoteResp']['macs']
             if len(remote_macs) != 0:
                 for j in remote_macs:
@@ -342,7 +367,7 @@ def show_compare_result(verbose, chk_list):
                     j = str(j)
                     false_msg += j + '\n'
             if len(false_msg) == 0:
-                msg += 'Sync all data\n'
+                msg += 'Sync all table\n'
             else:
                 msg += false_msg
     print msg
@@ -368,8 +393,7 @@ def main():
         server = CompareOvsdbTsn(tsn_list)
     except:
         msg = 'Could not initialize'
-        print msg
-        raise
+        raise Exception(msg)
 
     tsn_table, ovsdb_table = server.get_tsn_ovsdb_dump(ovsdb_ip)
     chk_list = {}
