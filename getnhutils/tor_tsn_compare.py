@@ -171,7 +171,10 @@ class CompareOvsdbTsn(object):
         if type(tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']) == list:
             tsn_lsw_table = []
             for i in tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']:
-                tsn_lsw_table = tsn_lsw_table + i['lswitch']
+                if type(i['lswitch']) == dict:
+                    tsn_lsw_table = tsn_lsw_table + [i['lswitch']]
+                else:
+                    tsn_lsw_table = tsn_lsw_table + i['lswitch']
         else:
             tsn_lsw_table = tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']['lswitch']
         tsn_lsw_list = []
@@ -195,7 +198,10 @@ class CompareOvsdbTsn(object):
         if type(tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']) == list:
             tsn_mac_table = []
             for i in tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']:
-                tsn_mac_table = tsn_mac_table + i['macs']
+                if type(i['macs']) == dict:
+                    tsn_mac_table = tsn_mac_table + [i['macs']]
+                else:
+                    tsn_mac_table = tsn_mac_table + i['macs']
         else:
             tsn_mac_table = tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']['macs']
         tsn_mc_mac_list = []
@@ -224,7 +230,10 @@ class CompareOvsdbTsn(object):
         if type(tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']) == list:
             tsn_mac_table = []
             for i in tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']:
-                tsn_mac_table = tsn_mac_table + i['macs']
+                if type(i['macs']) == dict:
+                    tsn_mac_table = tsn_mac_table + [i['macs']]
+                else:
+                    tsn_mac_table = tsn_mac_table + i['macs']
         else:
             tsn_mac_table = tsn_table['tsn_mc_mac_local']['OvsdbMulticastMacLocalResp']['macs']
         tsn_mc_mac_list = []
@@ -311,7 +320,10 @@ class CompareOvsdbTsn(object):
         if type(tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']) == list:
             tsn_lswitch_table = []
             for i in tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']:
-               tsn_lswitch_table = tsn_lswitch_table + i['lswitch'] 
+               if type(i['lswitch']) == dict:
+                   tsn_lswitch_table = tsn_lswitch_table + [i['lswitch']]
+               else:
+                   tsn_lswitch_table = tsn_lswitch_table + i['lswitch'] 
         else:
             tsn_lswitch_table = tsn_table['tsn_lsw']['OvsdbLogicalSwitchResp']['lswitch']
         if type(tsn_lswitch_table) == list:
