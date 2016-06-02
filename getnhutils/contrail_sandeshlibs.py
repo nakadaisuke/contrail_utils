@@ -30,7 +30,7 @@ class GetContrailSandesh(object):
         keys = data.keys()
         if data[keys[0]].has_key('next_batch') == True:
             while True:
-                if data[keys[0]]['next_batch'].has_key('#text') == True:
+                if data[keys[0]].has_key('next_batch') == True:
                     old_data = data.copy()
                     path1 = data[keys[0]]['next_batch']['@link']
                     path2 = data[keys[0]]['next_batch']['#text']
