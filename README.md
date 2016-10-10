@@ -1,7 +1,7 @@
 # Contrail utilities
 This repository stores contrail utilities  
 1) bumtreedisp.py  
-   This utility shows BMU tree on vRouter.  
+   This utility shows BUM tree on vRouter.  
    use with vrouter IP address and VNI  
    python bumtreedisp.py -t 172.27.113.207 -v 1802  
    ### Host 172.27.113.207 VNI 1802 BUM Tree ###  
